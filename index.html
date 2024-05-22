@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Clicker</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Click the Button!</h1>
+        <button id="clicker">Click me</button>
+        <p>Clicks: <span id="click-count">{{ clicks }}</span></p>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+
+        document.getElementById('clicker').addEventListener('click', function() {
+            fetch('/click', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('click-count').textContent = data.clicks;
+                });
+        });
+    </script>
+</body>
+</html>
