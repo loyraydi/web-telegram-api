@@ -4,27 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram Clicker</title>
-    <link rel="stylesheet" href="/static/styles.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        #counter {
+            font-size: 48px;
+            margin-top: 50px;
+        }
+        #clickButton, #upgradeButton {
+            padding: 10px 20px;
+            font-size: 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        #clickButton:hover, #upgradeButton:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Click the Button!</h1>
-        <button id="clicker">Click me</button>
-        <p>Clicks: <span id="click-count">{{ clicks }}</span></p>
-    </div>
+    <h1>Telegram Clicker</h1>
+    <p>Click Count: <span id="counter">0</span></p>
+    <p>Upgrade Level: <span id="upgradeLevel">1</span></p>
+    <button id="clickButton">Click Me!</button>
+    <button id="upgradeButton">Upgrade Clicks</button>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
+        var clickCount = 0;
+        var passiveIncome = 0;
+        var upgradeLevel = 1;
+        var counterElement = document.getElementById('counter');
+        var upgradeLevelElement = document.getElementById('upgradeLevel');
+        var clickButton = document.getElementById('clickButton');
+        var upgradeButton = document.getElementById('upgradeButton');
 
-        document.getElementById('clicker').addEventListener('click', function() {
-            fetch('/click', {method: 'POST'})
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('click-count').textContent = data.clicks;
-                });
+        clickButton.addEventListener('click', function() {
+            clickCount += upgradeLevel;
+            updateCounter();
         });
+
+        upgradeButton.addEventListener('click', function() {
+            var upgradeCost = upgradeLevel * 10;
+            if (clickCount >= upgradeCost) {
+                clickCount -= upgradeCost;
+                upgradeLevel++;
+                updateCounter();
+                updateUpgradeLevel();
+            } else {
+                alert("Not enough clicks to upgrade!");
+            }
+        });
+
+        function updateCounter() {
+            counterElement.innerText = clickCount;
+        }
+
+        function updateUpgradeLevel() {
+            upgradeLevelElement.innerText = upgradeLevel;
+        }
+
+        setInterval(function() {
+            passiveIncome += upgradeLevel * 0.1; // Пассивное накопление монет
+            updateCounter();
+        }, 60000); // Каждую минуту
+
+        setInterval(function() {
+            clickCount += passiveIncome;
+            updateCounter();
+        }, 3600000); // Каждый час
     </script>
 </body>
 </html>
